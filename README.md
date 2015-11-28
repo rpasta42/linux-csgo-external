@@ -26,7 +26,7 @@ Credits:
 * Press a keybind to toggle the cheat.
 
 ## Notes
-* Requires Xlib, `# apt-get libx11-dev` on Debian based systems
+* Requires Xlib (both `libx11-dev:i386` and `libx11-dev`, `# apt-get install libx11-dev libx11-dev:i386` on Debian based systems
 * Bind in this Pull Request is Ctrl+Shift+X, but this is not optimal for gameplay.
 
 ## Known Bugs
