@@ -46,10 +46,12 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, uns
                     continue;
                 }
 
+	        csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xEC5), &spotted, sizeof(unsigned char));                
+
                 if(g_glow[i].m_bRenderWhenOccluded == 1) {
                   continue;
                 }
-	        csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xEC5), &spotted, sizeof(unsigned char));                
+
                 
 		g_glow[i].m_bRenderWhenOccluded = 1;
                 g_glow[i].m_bRenderWhenUnoccluded = 0;
