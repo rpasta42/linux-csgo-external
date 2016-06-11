@@ -3,8 +3,8 @@
 struct iovec g_remote[1024], g_local[1024];
 struct hack::GlowObjectDefinition_t g_glow[1024];
 
-int cachedSpottedAddress = -1;
 int count = 0;
+unsigned char spotted = 1;
 
 
 void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, unsigned long glowAddress) {
@@ -49,8 +49,9 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, uns
                 if(g_glow[i].m_bRenderWhenOccluded == 1) {
                   continue;
                 }
+	        csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xEC5), &spotted, sizeof(unsigned char));                
                 
-                g_glow[i].m_bRenderWhenOccluded = 1;
+		g_glow[i].m_bRenderWhenOccluded = 1;
                 g_glow[i].m_bRenderWhenUnoccluded = 0;
 
                 if (ent.m_iTeamNum == 2) {
