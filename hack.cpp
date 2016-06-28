@@ -34,6 +34,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, uns
 
     size_t writeCount = 0;
 
+ 
     for (unsigned int i = 0; i < count; i++) {
         if (g_glow[i].m_pEntity != NULL) {
             hack::Entity ent;
@@ -60,13 +61,13 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, uns
                     g_glow[i].m_flGlowRed = 1.0f;
                     g_glow[i].m_flGlowGreen = 0.0f;
                     g_glow[i].m_flGlowBlue = 0.0f;
-                    g_glow[i].m_flGlowAlpha = 0.4f;
+                    g_glow[i].m_flGlowAlpha = 0.6f;
 
                 } else if (ent.m_iTeamNum == 3) {
                     g_glow[i].m_flGlowRed = 0.0f;
                     g_glow[i].m_flGlowGreen = 0.0f;
                     g_glow[i].m_flGlowBlue = 1.0f;
-                    g_glow[i].m_flGlowAlpha = 0.4f;
+                    g_glow[i].m_flGlowAlpha = 0.6f;
                 }
             }
         }
