@@ -6,8 +6,26 @@ struct hack::GlowObjectDefinition_t g_glow[1024];
 int count = 0;
 unsigned char spotted = 1;
 
+bool NoFlash(remote::Handle* csgo, remote::MapModuleMemoryRegion* client)
+{
+    float fFlashAlpha = 70.0f;
+    float fFlashAlphaFromGame = 0.0f;
+    unsigned long localPlayer = 0;
 
-void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, unsigned long glowAddress) {
+    csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long));
+
+    if(localPlayer == 0)
+	return false;
+
+    csgo->Read((void*) (localPlayer+0xABE4), &fFlashAlphaFromGame, sizeof(float));
+
+    if(fFlashAlphaFromGame > 70.0f)
+	    csgo->Write((void*) (localPlayer+0xABE4), &fFlashAlpha, sizeof(float));
+
+    return true;
+}
+
+void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
     if (!csgo || !client)
         return;
 
@@ -18,7 +36,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, uns
 
     hack::CGlowObjectManager manager;
 
-    if (!csgo->Read((void*) glowAddress, &manager, sizeof(hack::CGlowObjectManager))) {
+    if (!csgo->Read((void*) csgo->m_addressOfGlowPointer, &manager, sizeof(hack::CGlowObjectManager))) {
         // std::cout << "Failed to read glowClassAddress" << std::endl;
         return;
     }
@@ -83,6 +101,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, uns
 
         writeCount++;
     }
-
+    NoFlash(csgo,client);
     process_vm_writev(csgo->GetPid(), g_local, writeCount, g_remote, writeCount, 0);
+
 }

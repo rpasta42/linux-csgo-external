@@ -46,6 +46,9 @@ namespace remote {
 
     class Handle {
     public:
+	unsigned long m_addressOfGlowPointer;
+	unsigned long m_addressOfLocalPlayer;
+
         Handle() : pid(-1) {}
         Handle(pid_t target);
         Handle(std::string target);
