@@ -95,24 +95,20 @@ int main() {
 
     unsigned long call = csgo.GetCallAddress(foundGlowPointerCall);
 
-
     cout << "Glow function address: " << std::hex << call << endl;
     cout << "Glow function address offset: " << std::hex << call - client.start << endl;
 
-    unsigned int addressOfGlowPointerOffset ;
 
-    if (!csgo.Read((void*) (call + 0x10), &addressOfGlowPointerOffset, sizeof(unsigned int))) {
-        cout << "Unable to read address of glow pointer" << endl;
-        return 0;
-    }
-    cout << "Glow Array offset: " << std::hex << addressOfGlowPointerOffset << endl << endl;
+    csgo.m_addressOfGlowPointer = csgo.GetCallAddress((void*)(call+0xF));
+    cout << "Glow Array pointer " << std::hex << csgo.m_addressOfGlowPointer << endl << endl;
 
 
-    unsigned long addressOfGlowPointer = (call + 0x10) + addressOfGlowPointerOffset + 0x4  ;
+  // long ptrLocalPlayer = (client->client_start + 0x5A9B1A0); 27/06/16
+    long foundLocalPlayerLea = (long)client.find(csgo,
+                                             "\x48\x89\xe5\x74\x0e\x48\x8d\x05\x00\x00\x00\x00", //27/06/16
+                                             "xxxxxxxx????");
 
-    cout << "Glow Array pointer " << std::hex << addressOfGlowPointer << endl << endl;
-
-
+   csgo.m_addressOfLocalPlayer = csgo.GetCallAddress((void*)(foundLocalPlayerLea+0x7));
 
 
     while (csgo.IsRunning()) {
@@ -134,11 +130,8 @@ int main() {
 		}
 
 		if (shouldGlow)
-	        hack::Glow(&csgo, &client, addressOfGlowPointer);
-
-        usleep(1000);
-    }
-
+	        	hack::Glow(&csgo, &client);
+	}
 //    cout << "Game ended." << endl;
 
     return 0;
