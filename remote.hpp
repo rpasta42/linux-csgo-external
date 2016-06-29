@@ -48,7 +48,7 @@ namespace remote {
     public:
 	unsigned long m_addressOfGlowPointer;
 	unsigned long m_addressOfLocalPlayer;
-
+	bool m_shouldTrigger;
         Handle() : pid(-1) {}
         Handle(pid_t target);
         Handle(std::string target);

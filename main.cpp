@@ -26,11 +26,12 @@ int main() {
 	XEvent ev;
 
 	int keycode = XKeysymToKeycode(dpy, XK_X);
-	unsigned int modifiers = ControlMask | ShiftMask;
+	unsigned int modifiers = 0;
 
 	XGrabKey(dpy, keycode, modifiers, root, false,
 				GrabModeAsync, GrabModeAsync);
-	XSelectInput(dpy, root, KeyPressMask);
+
+	XSelectInput(dpy, root, modifiers);
 	
     remote::Handle csgo;
 
@@ -108,17 +109,19 @@ int main() {
                                              "\x48\x89\xe5\x74\x0e\x48\x8d\x05\x00\x00\x00\x00", //27/06/16
                                              "xxxxxxxx????");
 
-   csgo.m_addressOfLocalPlayer = csgo.GetCallAddress((void*)(foundLocalPlayerLea+0x7));
+    csgo.m_addressOfLocalPlayer = csgo.GetCallAddress((void*)(foundLocalPlayerLea+0x7));
 
-
+    csgo.m_shouldTrigger = false;
     while (csgo.IsRunning()) {
 		while (XPending(dpy) > 0) {
 			XNextEvent(dpy, &ev);
 			switch (ev.type) {
 				case KeyPress:
-					cout << "Toggling glow..." << endl;
+					
 					XUngrabKey(dpy, keycode, modifiers, root);
-					shouldGlow = !shouldGlow;
+					//shouldGlow = !shouldGlow;
+					csgo.m_shouldTrigger = !csgo.m_shouldTrigger ;
+					cout << "Toggling trigger... " << csgo.m_shouldTrigger << endl;
 					break;
 				default:
 					break;
@@ -131,6 +134,7 @@ int main() {
 
 		if (shouldGlow)
 	        	hack::Glow(&csgo, &client);
+	usleep(10);
 	}
 //    cout << "Game ended." << endl;
 
