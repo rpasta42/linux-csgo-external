@@ -67,8 +67,11 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                     g_glow[i].m_bRenderWhenUnoccluded = 0;
                     continue;
                 }
+				
+		unsigned int iAlt1Status = 0 ;
+		csgo->Read((void*) ((client->client_start)+0x62E9CB8), &iAlt1Status, sizeof(int)); 
 
-  		if(localPlayer != 0 && csgo->m_shouldTrigger == true){
+  		if(localPlayer != 0 && (iAlt1Status == 0x5) ){
 			if(ent.m_iTeamNum != teamNumber)
 			{
 				unsigned int crossHairId = 0;

@@ -20,7 +20,7 @@ int main() {
 
     log::init();
     log::put("Hack loaded...");
-
+/*
 	Display* dpy = XOpenDisplay(0);
 	Window root = DefaultRootWindow(dpy);
 	XEvent ev;
@@ -32,7 +32,7 @@ int main() {
 				GrabModeAsync, GrabModeAsync);
 
 	XSelectInput(dpy, root, modifiers);
-	
+	*/
     remote::Handle csgo;
 
     while (true) {
@@ -117,8 +117,8 @@ int main() {
     csgo.m_addressOfForceAttack = csgo.GetCallAddress((void*)(foundAttackMov+19));
 
 
-    csgo.m_shouldTrigger = false;
     while (csgo.IsRunning()) {
+/*
 		while (XPending(dpy) > 0) {
 			XNextEvent(dpy, &ev);
 			switch (ev.type) {
@@ -136,8 +136,9 @@ int main() {
 			XGrabKey(dpy, keycode, modifiers, root, false,
 						GrabModeAsync, GrabModeAsync);
 			XSelectInput(dpy, root, KeyPressMask);
-		}
 
+		}
+*/
 		if (shouldGlow)
 	        	hack::Glow(&csgo, &client);
 	usleep(10);

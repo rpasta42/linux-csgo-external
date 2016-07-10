@@ -50,7 +50,6 @@ namespace remote {
 	unsigned long m_addressOfLocalPlayer;
 	unsigned long m_addressOfForceAttack;
 
-	bool m_shouldTrigger;
         Handle() : pid(-1) {}
         Handle(pid_t target);
         Handle(std::string target);
