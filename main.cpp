@@ -7,8 +7,6 @@
 
 using namespace std;
 
-bool shouldGlow = true;
-
 
 int main() {
     if (getuid() != 0) {
@@ -20,19 +18,22 @@ int main() {
 
     log::init();
     log::put("Hack loaded...");
-/*
-	Display* dpy = XOpenDisplay(0);
-	Window root = DefaultRootWindow(dpy);
-	XEvent ev;
 
-	int keycode = XKeysymToKeycode(dpy, XK_X);
-	unsigned int modifiers = 0;
 
-	XGrabKey(dpy, keycode, modifiers, root, false,
+    Display* dpy = XOpenDisplay(0);
+    Window root = DefaultRootWindow(dpy);
+    XEvent ev;
+    
+    int keycodeGlow = XKeysymToKeycode(dpy, XK_F7);
+    int keycodeFlash = XKeysymToKeycode(dpy, XK_F8);
+    unsigned int modifiers = 0;
+    XGrabKey(dpy, keycodeGlow, modifiers, root, false,
 				GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy, keycodeFlash, modifiers, root, false,
+				GrabModeAsync, GrabModeAsync);
+    XSelectInput(dpy, root, KeyPressMask);
 
-	XSelectInput(dpy, root, modifiers);
-	*/
+
     remote::Handle csgo;
 
     while (true) {
@@ -120,33 +121,38 @@ int main() {
                                              "\x44\x89\xe8\xc1\xe0\x11\xc1\xf8\x1f\x83\xe8\x03\x45\x84\xe4\x74\x00\x21\xd0", //10/07/16
                                              "xxxxxxxxxxxxxxxx?xx");
     csgo.m_addressOfAlt1 = csgo.GetCallAddress((void*)(foundAlt1Mov+20));
+
+    csgo.m_bShouldGlow = true;
+    csgo.m_bShouldNoFlash = true;
     while (csgo.IsRunning()) {
-/*
-		while (XPending(dpy) > 0) {
+	while (XPending(dpy) > 0) {
 			XNextEvent(dpy, &ev);
 			switch (ev.type) {
 				case KeyPress:
-					
-					XUngrabKey(dpy, keycode, modifiers, root);
-					//shouldGlow = !shouldGlow;
-					csgo.m_shouldTrigger = !csgo.m_shouldTrigger ;
-					cout << "Toggling trigger... " << csgo.m_shouldTrigger << endl;
-					break;
+					if (ev.xkey.keycode == keycodeGlow)
+					{
+						csgo.m_bShouldGlow = !csgo.m_bShouldGlow;
+						cout << "Toggling glow... (" << csgo.m_bShouldGlow << ")" << endl;
+						break;
+					}
+					if (ev.xkey.keycode == keycodeFlash)
+					{
+						csgo.m_bShouldNoFlash = !csgo.m_bShouldNoFlash;
+						cout << "Toggling NoFlash.. (" << csgo.m_bShouldNoFlash << ")" << endl;
+						break;
+					}
 				default:
 					break;
 			}
 
-			XGrabKey(dpy, keycode, modifiers, root, false,
-						GrabModeAsync, GrabModeAsync);
 			XSelectInput(dpy, root, KeyPressMask);
-
 		}
-*/
-		if (shouldGlow)
-	        	hack::Glow(&csgo, &client);
-	usleep(10);
+	        hack::Glow(&csgo, &client);
+		usleep(10);
 	}
 //    cout << "Game ended." << endl;
-
+	
+    XUngrabKey(dpy, keycodeGlow, modifiers, root);
+    XUngrabKey(dpy, keycodeFlash, modifiers, root);
     return 0;
 }

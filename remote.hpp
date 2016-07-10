@@ -51,6 +51,9 @@ namespace remote {
 	unsigned long m_addressOfForceAttack;
 	unsigned long m_addressOfAlt1;
 
+	bool m_bShouldGlow;
+	bool m_bShouldNoFlash;
+
         Handle() : pid(-1) {}
         Handle(pid_t target);
         Handle(std::string target);

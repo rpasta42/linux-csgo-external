@@ -9,12 +9,16 @@ unsigned char spotted = 1;
 void NoFlash(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, unsigned long localPlayer)
 {
     float fFlashAlpha = 70.0f;
+    float fFlashAlphaFull = 255.0f;
     float fFlashAlphaFromGame = 0.0f;
 
     csgo->Read((void*) (localPlayer+0xABE4), &fFlashAlphaFromGame, sizeof(float));
 
-    if(fFlashAlphaFromGame > 70.0f)
-	    csgo->Write((void*) (localPlayer+0xABE4), &fFlashAlpha, sizeof(float));
+    if((fFlashAlphaFromGame > fFlashAlpha) && (csgo->m_bShouldNoFlash == true))
+	csgo->Write((void*) (localPlayer+0xABE4), &fFlashAlpha, sizeof(float));
+    else if ((fFlashAlphaFromGame < fFlashAlphaFull) && (csgo->m_bShouldNoFlash == false))
+	csgo->Write((void*) (localPlayer+0xABE4), &fFlashAlphaFull, sizeof(float));
+   
 }
 
 void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
@@ -117,17 +121,19 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 		
             }
         }
+	if(csgo->m_bShouldGlow)
+	{
+		size_t bytesToCutOffEnd = sizeof(hack::GlowObjectDefinition_t) - g_glow[i].writeEnd();
+		size_t bytesToCutOffBegin = (size_t) g_glow[i].writeStart();
+		size_t totalWriteSize = (sizeof(hack::GlowObjectDefinition_t) - (bytesToCutOffBegin + bytesToCutOffEnd));
 
-        size_t bytesToCutOffEnd = sizeof(hack::GlowObjectDefinition_t) - g_glow[i].writeEnd();
-        size_t bytesToCutOffBegin = (size_t) g_glow[i].writeStart();
-        size_t totalWriteSize = (sizeof(hack::GlowObjectDefinition_t) - (bytesToCutOffBegin + bytesToCutOffEnd));
+		g_remote[writeCount].iov_base =
+		        ((uint8_t*) data_ptr + (sizeof(hack::GlowObjectDefinition_t) * i)) + bytesToCutOffBegin;
+		g_local[writeCount].iov_base = ((uint8_t*) &g_glow[i]) + bytesToCutOffBegin;
+		g_remote[writeCount].iov_len = g_local[writeCount].iov_len = totalWriteSize;
 
-        g_remote[writeCount].iov_base =
-                ((uint8_t*) data_ptr + (sizeof(hack::GlowObjectDefinition_t) * i)) + bytesToCutOffBegin;
-        g_local[writeCount].iov_base = ((uint8_t*) &g_glow[i]) + bytesToCutOffBegin;
-        g_remote[writeCount].iov_len = g_local[writeCount].iov_len = totalWriteSize;
-
-        writeCount++;
+		writeCount++;
+	}
     }
     
     process_vm_writev(csgo->GetPid(), g_local, writeCount, g_remote, writeCount, 0);
