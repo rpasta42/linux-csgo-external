@@ -116,7 +116,10 @@ int main() {
                                              "xxxxxxxxxxxxxxx?xx");
     csgo.m_addressOfForceAttack = csgo.GetCallAddress((void*)(foundAttackMov+19));
 
-
+    unsigned long foundAlt1Mov = (long)client.find(csgo,
+                                             "\x44\x89\xe8\xc1\xe0\x11\xc1\xf8\x1f\x83\xe8\x03\x45\x84\xe4\x74\x00\x21\xd0", //10/07/16
+                                             "xxxxxxxxxxxxxxxx?xx");
+    csgo.m_addressOfAlt1 = csgo.GetCallAddress((void*)(foundAlt1Mov+20));
     while (csgo.IsRunning()) {
 /*
 		while (XPending(dpy) > 0) {

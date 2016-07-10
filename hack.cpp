@@ -69,7 +69,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                 }
 				
 		unsigned int iAlt1Status = 0 ;
-		csgo->Read((void*) ((client->client_start)+0x62E9CB8), &iAlt1Status, sizeof(int)); 
+		csgo->Read((void*) (csgo->m_addressOfAlt1), &iAlt1Status, sizeof(int)); 
 
   		if(localPlayer != 0 && (iAlt1Status == 0x5) ){
 			if(ent.m_iTeamNum != teamNumber)
