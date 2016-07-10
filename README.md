@@ -1,7 +1,7 @@
 linux-csgo-external
 ===================
 
-Linux x86 cheat for x86 and x64 linux systems
+Linux cheat for x64 linux systems
 
 Compiled and tested on:
 - Xubuntu
@@ -13,22 +13,18 @@ Compiled and tested on:
 Credits:
 - Original author: s0beit
 - Original author credits: BoToX & buFFy
-- Maintainer/Updater: laazyboy13 & community
-- X64 fix : owerosu
+- Maintainer/Updater: laazyboy13, owerosu & community
 
-#Pull Request #4 - don't make an issue if this is your problem. I don't give a shit if you cant solve a dependency issue.
+## Toggles
+* F7 : GlowESP
+* F8 : NoFlash
 
-# Create Toggle Keybind
-
-## Synopsis
-* Solves #2 
-    - (Kind of)
-    - No toggle for just radar.
-* Press a keybind to toggle the cheat.
+## TriggerKey
+Bind your own key to alt1:
+bind yourkey +alt1
 
 ## Notes
 * Requires Xlib (both `libx11-dev:i386` and `libx11-dev`, `# apt-get install libx11-dev libx11-dev:i386` on Debian based systems
-* Bind in this Pull Request is Ctrl+Shift+X, but this is not optimal for gameplay.
 
 ## Known Bugs
-* Does not work with Numlock enabled.
+* Toggles do not work with Numlock enabled.
