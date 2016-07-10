@@ -80,9 +80,9 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 				if(crossHairId == entityId)
 				{
 					usleep(100);
-					csgo->Write((void*) ((unsigned long)(client->client_start)+0x62E4164), &attack, sizeof(int));
+					csgo->Write((void*) (csgo->m_addressOfForceAttack), &attack, sizeof(int));
 					usleep(100);
-					csgo->Write((void*) ((unsigned long)(client->client_start)+0x62E4164), &release, sizeof(int));
+					csgo->Write((void*) (csgo->m_addressOfForceAttack), &release, sizeof(int));
 				}
 			}
 		}

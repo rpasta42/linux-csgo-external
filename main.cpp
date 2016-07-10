@@ -105,11 +105,17 @@ int main() {
 
 
   // long ptrLocalPlayer = (client->client_start + 0x5A9B1A0); 27/06/16
-    long foundLocalPlayerLea = (long)client.find(csgo,
+    unsigned long foundLocalPlayerLea = (long)client.find(csgo,
                                              "\x48\x89\xe5\x74\x0e\x48\x8d\x05\x00\x00\x00\x00", //27/06/16
                                              "xxxxxxxx????");
 
     csgo.m_addressOfLocalPlayer = csgo.GetCallAddress((void*)(foundLocalPlayerLea+0x7));
+
+    unsigned long foundAttackMov = (long)client.find(csgo,
+                                             "\x44\x89\xe8\x83\xe0\x01\xf7\xd8\x83\xe8\x03\x45\x84\xe4\x74\x00\x21\xd0", //10/07/16
+                                             "xxxxxxxxxxxxxxx?xx");
+    csgo.m_addressOfForceAttack = csgo.GetCallAddress((void*)(foundAttackMov+19));
+
 
     csgo.m_shouldTrigger = false;
     while (csgo.IsRunning()) {
