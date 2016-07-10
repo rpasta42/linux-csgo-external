@@ -28,3 +28,4 @@ bind yourkey +alt1
 
 ## Known Bugs
 * Toggles do not work with Numlock enabled.
+* Trigger doesn't work at far distance
