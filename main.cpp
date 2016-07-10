@@ -20,18 +20,19 @@ int main() {
 
     log::init();
     log::put("Hack loaded...");
-
+/*
 	Display* dpy = XOpenDisplay(0);
 	Window root = DefaultRootWindow(dpy);
 	XEvent ev;
 
 	int keycode = XKeysymToKeycode(dpy, XK_X);
-	unsigned int modifiers = ControlMask | ShiftMask;
+	unsigned int modifiers = 0;
 
 	XGrabKey(dpy, keycode, modifiers, root, false,
 				GrabModeAsync, GrabModeAsync);
-	XSelectInput(dpy, root, KeyPressMask);
-	
+
+	XSelectInput(dpy, root, modifiers);
+	*/
     remote::Handle csgo;
 
     while (true) {
@@ -104,21 +105,32 @@ int main() {
 
 
   // long ptrLocalPlayer = (client->client_start + 0x5A9B1A0); 27/06/16
-    long foundLocalPlayerLea = (long)client.find(csgo,
+    unsigned long foundLocalPlayerLea = (long)client.find(csgo,
                                              "\x48\x89\xe5\x74\x0e\x48\x8d\x05\x00\x00\x00\x00", //27/06/16
                                              "xxxxxxxx????");
 
-   csgo.m_addressOfLocalPlayer = csgo.GetCallAddress((void*)(foundLocalPlayerLea+0x7));
+    csgo.m_addressOfLocalPlayer = csgo.GetCallAddress((void*)(foundLocalPlayerLea+0x7));
 
+    unsigned long foundAttackMov = (long)client.find(csgo,
+                                             "\x44\x89\xe8\x83\xe0\x01\xf7\xd8\x83\xe8\x03\x45\x84\xe4\x74\x00\x21\xd0", //10/07/16
+                                             "xxxxxxxxxxxxxxx?xx");
+    csgo.m_addressOfForceAttack = csgo.GetCallAddress((void*)(foundAttackMov+19));
 
+    unsigned long foundAlt1Mov = (long)client.find(csgo,
+                                             "\x44\x89\xe8\xc1\xe0\x11\xc1\xf8\x1f\x83\xe8\x03\x45\x84\xe4\x74\x00\x21\xd0", //10/07/16
+                                             "xxxxxxxxxxxxxxxx?xx");
+    csgo.m_addressOfAlt1 = csgo.GetCallAddress((void*)(foundAlt1Mov+20));
     while (csgo.IsRunning()) {
+/*
 		while (XPending(dpy) > 0) {
 			XNextEvent(dpy, &ev);
 			switch (ev.type) {
 				case KeyPress:
-					cout << "Toggling glow..." << endl;
+					
 					XUngrabKey(dpy, keycode, modifiers, root);
-					shouldGlow = !shouldGlow;
+					//shouldGlow = !shouldGlow;
+					csgo.m_shouldTrigger = !csgo.m_shouldTrigger ;
+					cout << "Toggling trigger... " << csgo.m_shouldTrigger << endl;
 					break;
 				default:
 					break;
@@ -127,10 +139,12 @@ int main() {
 			XGrabKey(dpy, keycode, modifiers, root, false,
 						GrabModeAsync, GrabModeAsync);
 			XSelectInput(dpy, root, KeyPressMask);
-		}
 
+		}
+*/
 		if (shouldGlow)
 	        	hack::Glow(&csgo, &client);
+	usleep(10);
 	}
 //    cout << "Game ended." << endl;
 

@@ -6,23 +6,15 @@ struct hack::GlowObjectDefinition_t g_glow[1024];
 int count = 0;
 unsigned char spotted = 1;
 
-bool NoFlash(remote::Handle* csgo, remote::MapModuleMemoryRegion* client)
+void NoFlash(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, unsigned long localPlayer)
 {
     float fFlashAlpha = 70.0f;
     float fFlashAlphaFromGame = 0.0f;
-    unsigned long localPlayer = 0;
-
-    csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long));
-
-    if(localPlayer == 0)
-	return false;
 
     csgo->Read((void*) (localPlayer+0xABE4), &fFlashAlphaFromGame, sizeof(float));
 
     if(fFlashAlphaFromGame > 70.0f)
 	    csgo->Write((void*) (localPlayer+0xABE4), &fFlashAlpha, sizeof(float));
-
-    return true;
 }
 
 void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
@@ -51,12 +43,23 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
     }
 
     size_t writeCount = 0;
+    unsigned long localPlayer = 0;
+    unsigned int teamNumber = 0;
 
- 
+    csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long));
+
+    if(localPlayer != 0)
+    {
+	csgo->Read((void*) (localPlayer+0x120), &teamNumber, sizeof(int));
+	NoFlash(csgo, client, localPlayer);	
+    }
+
+    
     for (unsigned int i = 0; i < count; i++) {
         if (g_glow[i].m_pEntity != NULL) {
             hack::Entity ent;
-
+	    
+   	    
             if (csgo->Read(g_glow[i].m_pEntity, &ent, sizeof(hack::Entity))) {
                 if (ent.m_iTeamNum != 2 && ent.m_iTeamNum != 3 ||
                     ent.m_isDormant == 1) {
@@ -64,6 +67,28 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                     g_glow[i].m_bRenderWhenUnoccluded = 0;
                     continue;
                 }
+				
+		unsigned int iAlt1Status = 0 ;
+		csgo->Read((void*) (csgo->m_addressOfAlt1), &iAlt1Status, sizeof(int)); 
+
+  		if(localPlayer != 0 && (iAlt1Status == 0x5) ){
+			if(ent.m_iTeamNum != teamNumber)
+			{
+				unsigned int crossHairId = 0;
+				unsigned int entityId = 0;
+				unsigned int attack = 0x5;
+				unsigned int release = 0x4;
+				csgo->Read((void*) (localPlayer+0xB370), &crossHairId, sizeof(int));
+				csgo->Read((void*) ((unsigned long)(g_glow[i].m_pEntity)+0x8C), &entityId, sizeof(int));
+				if(crossHairId == entityId)
+				{
+					usleep(100);
+					csgo->Write((void*) (csgo->m_addressOfForceAttack), &attack, sizeof(int));
+					usleep(100);
+					csgo->Write((void*) (csgo->m_addressOfForceAttack), &release, sizeof(int));
+				}
+			}
+		}
 
 	        csgo->Write((void*) ((unsigned long) g_glow[i].m_pEntity + 0xEC5), &spotted, sizeof(unsigned char));                
 
@@ -87,6 +112,9 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                     g_glow[i].m_flGlowBlue = 1.0f;
                     g_glow[i].m_flGlowAlpha = 0.6f;
                 }
+		
+ 		
+		
             }
         }
 
@@ -101,7 +129,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 
         writeCount++;
     }
-    NoFlash(csgo,client);
+    
     process_vm_writev(csgo->GetPid(), g_local, writeCount, g_remote, writeCount, 0);
 
 }

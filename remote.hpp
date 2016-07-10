@@ -48,6 +48,8 @@ namespace remote {
     public:
 	unsigned long m_addressOfGlowPointer;
 	unsigned long m_addressOfLocalPlayer;
+	unsigned long m_addressOfForceAttack;
+	unsigned long m_addressOfAlt1;
 
         Handle() : pid(-1) {}
         Handle(pid_t target);
