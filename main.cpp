@@ -34,7 +34,11 @@ int main() {
         return 0;
     }
 
-    cout << "s0beit linux hack version 1.3" << endl;
+    std::cout << "\n---------------[linux-csgo-external]---------------\n\n"                 << 
+            "Original author: s0beit\n"                                       <<
+            "Maintainers:\n\tlaazyboy13,\n\towerosu,\n\tMcSwaggens\n\tcommunity\n"    <<
+            "github: https://github.com/McSwaggens/linux-csgo-external\n"   <<
+            "\n---------------[linux-csgo-external]---------------\n"                   << endl;
 
     log::init();
     log::put("Hack loaded...");
