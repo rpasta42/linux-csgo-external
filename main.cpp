@@ -1,12 +1,32 @@
 #include <iostream>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include "log.hpp"
-#include "remote.hpp"
-#include "hack.hpp"
+
+#include <X11/keysym.h>
+#include <X11/keysymdef.h>
+
+#include <X11/extensions/XTest.h>
+
+#include <unistd.h>
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+
+#include <chrono>
+#include <thread>
+
+#include "log.h"
+#include "remote.h"
+#include "hack.h"
 
 using namespace std;
 
+std::string
+Endi(bool bl)
+{
+    return bl ? "Enabled" : "Disabled";
+}
 
 int main() {
     if (getuid() != 0) {
@@ -18,22 +38,27 @@ int main() {
 
     log::init();
     log::put("Hack loaded...");
-
-
-    Display* dpy = XOpenDisplay(0);
-    Window root = DefaultRootWindow(dpy);
-    XEvent ev;
     
-    int keycodeGlow = XKeysymToKeycode(dpy, XK_F7);
-    int keycodeFlash = XKeysymToKeycode(dpy, XK_F8);
+    Display* display = XOpenDisplay(0);
+	Window root = DefaultRootWindow(display);
+	
+    int keycodeGlow = XKeysymToKeycode(display, XK_F7);
+    int keycodeFlash = XKeysymToKeycode(display, XK_F8);
+    int keycodeBHopEnable = XKeysymToKeycode(display, XK_F9);
+    int keycodeBHop = XKeysymToKeycode(display, XK_space);
+    
     unsigned int modifiers = 0;
-    XGrabKey(dpy, keycodeGlow, modifiers, root, false,
+    XGrabKey(display, keycodeGlow, modifiers, root, false,
 				GrabModeAsync, GrabModeAsync);
-    XGrabKey(dpy, keycodeFlash, modifiers, root, false,
+    XGrabKey(display, keycodeFlash, modifiers, root, false,
 				GrabModeAsync, GrabModeAsync);
-    XSelectInput(dpy, root, KeyPressMask);
-
-
+    XGrabKey(display, keycodeBHop, modifiers, root, false, GrabModeAsync, GrabModeAsync);
+    XGrabKey(display, keycodeBHopEnable, modifiers, root, false, GrabModeAsync, GrabModeAsync);
+    
+    
+    XSelectInput(display, root, KeyPressMask);
+    
+    
     remote::Handle csgo;
 
     while (true) {
@@ -76,19 +101,7 @@ int main() {
     client.client_start = client.start;
 
 
-// Old sig x86 "\xE8\x00\x00\x00\x00\x8B\x78\x14\x6B\xD6"
-//                                             "x????xxxxx"
-//Old Sig Pre 11/10/15
-//\xE8\x00\x00\x00\x00\x8B\x78\x14\x6B\xD6\x34
-//x????xxxxxx
-//New Sig as of 11/10/15
-//\xE8\x00\x00\x00\x00\x8B\x78\x14\x6B\xD6\x38
-//x????xxxxxx
-//11/10/15 Sig reduction, we don't need the size
-//\xE8\x00\x00\x00\x00\x8B\x78\x14\x6B\xD6
-//x????xxxxx
-
- void* foundGlowPointerCall = client.find(csgo,
+    void* foundGlowPointerCall = client.find(csgo,
                                              "\xE8\x00\x00\x00\x00\x48\x8b\x10\x48\xc1\xe3\x06\x44",
                                              "x????xxxxxxxx");
 
@@ -105,11 +118,11 @@ int main() {
     cout << "Glow Array pointer " << std::hex << csgo.m_addressOfGlowPointer << endl << endl;
 
 
-  // long ptrLocalPlayer = (client->client_start + 0x5A9B1A0); 27/06/16
+    long ptrLocalPlayer = (client.client_start + 0x5A9B1A0); // 27/06/16
     unsigned long foundLocalPlayerLea = (long)client.find(csgo,
                                              "\x48\x89\xe5\x74\x0e\x48\x8d\x05\x00\x00\x00\x00", //27/06/16
                                              "xxxxxxxx????");
-
+                                             
     csgo.m_addressOfLocalPlayer = csgo.GetCallAddress((void*)(foundLocalPlayerLea+0x7));
 
     unsigned long foundAttackMov = (long)client.find(csgo,
@@ -120,39 +133,70 @@ int main() {
     unsigned long foundAlt1Mov = (long)client.find(csgo,
                                              "\x44\x89\xe8\xc1\xe0\x11\xc1\xf8\x1f\x83\xe8\x03\x45\x84\xe4\x74\x00\x21\xd0", //10/07/16
                                              "xxxxxxxxxxxxxxxx?xx");
+    
     csgo.m_addressOfAlt1 = csgo.GetCallAddress((void*)(foundAlt1Mov+20));
+    cout << "Address of local player " << csgo.m_addressOfLocalPlayer << endl;
 
     csgo.m_bShouldGlow = true;
     csgo.m_bShouldNoFlash = true;
+    csgo.m_bBhopEnabled = true;
+    csgo.m_bShouldBHop = false;
+    
+    XEvent ev;
+    
     while (csgo.IsRunning()) {
-	while (XPending(dpy) > 0) {
-			XNextEvent(dpy, &ev);
-			switch (ev.type) {
-				case KeyPress:
+	while (XPending(display) > 0) {
+			XNextEvent(display, &ev);
+                if (ev.type == KeyPress){
 					if (ev.xkey.keycode == keycodeGlow)
 					{
 						csgo.m_bShouldGlow = !csgo.m_bShouldGlow;
-						cout << "Toggling glow... (" << csgo.m_bShouldGlow << ")" << endl;
+						cout << "Glow [" << Endi(csgo.m_bShouldGlow) << "]" << endl;
 						break;
 					}
 					if (ev.xkey.keycode == keycodeFlash)
 					{
-						csgo.m_bShouldNoFlash = !csgo.m_bShouldNoFlash;
-						cout << "Toggling NoFlash.. (" << csgo.m_bShouldNoFlash << ")" << endl;
+                        csgo.m_bShouldNoFlash = !csgo.m_bShouldNoFlash;
+						cout << "NoFlash [" << Endi(csgo.m_bShouldNoFlash) << "]" << endl;
 						break;
 					}
-				default:
-					break;
-			}
+                    if (ev.xkey.keycode == keycodeBHopEnable)
+					{
+						csgo.m_bBhopEnabled = !csgo.m_bBhopEnabled;
+                        
+                        if (!csgo.m_bBhopEnabled)
+                        {
+                            XUngrabKey(display, keycodeBHop, modifiers, root);
+                        }
+                        else
+                        {
+                            XGrabKey(display, keycodeBHop, modifiers, root, false, GrabModeAsync, GrabModeAsync);
+                        }
+                        
+                        cout << "BHop [" << Endi(csgo.m_bBhopEnabled) << "]" << endl;
+						break;
+					}
+                    if (ev.xkey.keycode == keycodeBHop)
+					{
+						csgo.m_bShouldBHop = !csgo.m_bShouldBHop;
+                        cout << "BHop triggered [" << Endi(csgo.m_bShouldBHop) << "]" << endl;
+						break;
+					}
+                }
+                else
+                {
+                    break;
+                }
 
-			XSelectInput(dpy, root, KeyPressMask);
+			XSelectInput(display, root, KeyPressMask);
 		}
-	        hack::Glow(&csgo, &client);
-		usleep(10);
+        hack::Glow(&csgo, &client);
+        hack::Bhop(&csgo, &client, display);
 	}
-//    cout << "Game ended." << endl;
 	
-    XUngrabKey(dpy, keycodeGlow, modifiers, root);
-    XUngrabKey(dpy, keycodeFlash, modifiers, root);
+    XUngrabKey(display, keycodeGlow, modifiers, root);
+    XUngrabKey(display, keycodeFlash, modifiers, root);
+    XUngrabKey(display, keycodeBHop, modifiers, root);
+    XUngrabKey(display, keycodeBHopEnable, modifiers, root);
     return 0;
 }

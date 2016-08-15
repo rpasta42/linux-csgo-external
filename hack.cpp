@@ -1,4 +1,4 @@
-#include "hack.hpp"
+#include "hack.h"
 
 struct iovec g_remote[1024], g_local[1024];
 struct hack::GlowObjectDefinition_t g_glow[1024];
@@ -13,12 +13,37 @@ void NoFlash(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, unsign
     float fFlashAlphaFromGame = 0.0f;
 
     csgo->Read((void*) (localPlayer+0xABE4), &fFlashAlphaFromGame, sizeof(float));
-
     if((fFlashAlphaFromGame > fFlashAlpha) && (csgo->m_bShouldNoFlash == true))
 	csgo->Write((void*) (localPlayer+0xABE4), &fFlashAlpha, sizeof(float));
     else if ((fFlashAlphaFromGame < fFlashAlphaFull) && (csgo->m_bShouldNoFlash == false))
 	csgo->Write((void*) (localPlayer+0xABE4), &fFlashAlphaFull, sizeof(float));
    
+}
+
+void hack::Bhop(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, Display* display)
+{
+    if (!csgo || !client)
+        return;
+        
+    int keycodeJump = XKeysymToKeycode(display, XK_K);
+    
+    unsigned long localPlayer = 0;
+
+    csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long));
+    
+    unsigned int onGround = 0;
+    csgo->Read((void*) (localPlayer+0x12c+0x4), &onGround, sizeof(int));
+    
+    //std::cout << "Onground: " << (onGround & (1 << 0)) << std::endl;
+    
+    onGround = onGround & (1 << 0);
+    
+    if (onGround == 1 && csgo->m_bShouldBHop && csgo->m_bBhopEnabled)
+    {
+        XTestFakeKeyEvent(display, keycodeJump, True, 0);
+        this_thread::sleep_for(chrono::milliseconds(1));
+        XTestFakeKeyEvent(display, keycodeJump, False, 0);
+    }
 }
 
 void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
@@ -57,7 +82,13 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 	csgo->Read((void*) (localPlayer+0x120), &teamNumber, sizeof(int));
 	NoFlash(csgo, client, localPlayer);	
     }
+    
+    unsigned int health = 0;
+    csgo->Read((void*) (localPlayer+0x12c), &health, sizeof(int));
+    
+    //std::cout << "Health: " << health << std::endl;
 
+    
     
     for (unsigned int i = 0; i < count; i++) {
         if (g_glow[i].m_pEntity != NULL) {
@@ -76,7 +107,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 		csgo->Read((void*) (csgo->m_addressOfAlt1), &iAlt1Status, sizeof(int)); 
 
   		if(localPlayer != 0 && (iAlt1Status == 0x5) ){
-			if(ent.m_iTeamNum != teamNumber)
+			if(ent.m_iTeamNum != teamNumber)//https://www.youtube.com/watch?v=3GBdmQUZ9OI
 			{
 				unsigned int crossHairId = 0;
 				unsigned int entityId = 0;
@@ -116,9 +147,6 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                     g_glow[i].m_flGlowBlue = 1.0f;
                     g_glow[i].m_flGlowAlpha = 0.6f;
                 }
-		
- 		
-		
             }
         }
 	if(csgo->m_bShouldGlow)

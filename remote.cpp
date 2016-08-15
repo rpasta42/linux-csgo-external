@@ -1,5 +1,5 @@
-#include "remote.hpp"
-#include "log.hpp"
+#include "remote.h"
+#include "log.h"
 
 #define FINDPATTERN_CHUNKSIZE 0x1000
 
