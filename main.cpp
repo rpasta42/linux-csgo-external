@@ -40,8 +40,8 @@ int main() {
             "github: https://github.com/McSwaggens/linux-csgo-external\n"   <<
             "\n---------------[linux-csgo-external]---------------\n"                   << endl;
 
-    log::init();
-    log::put("Hack loaded...");
+    Log::init();
+    Log::put("Hack loaded...");
     
     Display* display = XOpenDisplay(0);
 	Window root = DefaultRootWindow(display);
