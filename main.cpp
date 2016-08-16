@@ -109,8 +109,7 @@ int main() {
                                              "\xE8\x00\x00\x00\x00\x48\x8b\x10\x48\xc1\xe3\x06\x44",
                                              "x????xxxxxxxx");
 
-    cout << "Glow Pointer Call Reference: " << std::hex << foundGlowPointerCall <<
-    " | Offset: " << (unsigned long) foundGlowPointerCall - client.start << endl;
+    cout << "Glow Pointer Call Reference: " << std::hex << foundGlowPointerCall << " | Offset: " << (unsigned long) foundGlowPointerCall - client.start << endl;
 
     unsigned long call = csgo.GetCallAddress(foundGlowPointerCall);
 
@@ -149,7 +148,7 @@ int main() {
     XEvent ev;
     
     while (csgo.IsRunning()) {
-	while (XPending(display) > 0) {
+	    while (XPending(display) > 0) {
 			XNextEvent(display, &ev);
                 if (ev.type == KeyPress){
 					if (ev.xkey.keycode == keycodeGlow)
