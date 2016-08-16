@@ -103,7 +103,18 @@ int main() {
 
     cout << "Found client_client.so [" << std::hex << client.start << "]" << endl;
     client.client_start = client.start;
-
+    
+    unsigned long pEngine = remote::getModule("engine_client.so", csgo.GetPid());
+    
+    if (pEngine == 0)
+    {
+        cout << "Could not find engine module..." << endl;
+        return 0;
+    }
+    
+    csgo.a_engine_client = pEngine;
+    
+    cout << "Found engine_client.so: [" << pEngine << "]" << endl;
 
     void* foundGlowPointerCall = client.find(csgo,
                                              "\xE8\x00\x00\x00\x00\x48\x8b\x10\x48\xc1\xe3\x06\x44",
