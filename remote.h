@@ -51,6 +51,7 @@ namespace remote {
 	unsigned long m_addressOfGlowPointer;
 	unsigned long m_addressOfLocalPlayer;
 	unsigned long m_addressOfForceAttack;
+    unsigned long m_oAddressOfForceJump;
 	unsigned long m_addressOfAlt1;
     unsigned long m_addressOfOnGround;
 

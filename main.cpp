@@ -119,8 +119,8 @@ int main() {
 
     csgo.m_addressOfGlowPointer = csgo.GetCallAddress((void*)(call+0xF));
     cout << "Glow Array pointer " << std::hex << csgo.m_addressOfGlowPointer << endl << endl;
-
-
+    
+    
     long ptrLocalPlayer = (client.client_start + 0x5A9B1A0); // 27/06/16
     unsigned long foundLocalPlayerLea = (long)client.find(csgo,
                                              "\x48\x89\xe5\x74\x0e\x48\x8d\x05\x00\x00\x00\x00", //27/06/16
@@ -139,6 +139,8 @@ int main() {
     
     csgo.m_addressOfAlt1 = csgo.GetCallAddress((void*)(foundAlt1Mov+20));
     cout << "Address of local player " << csgo.m_addressOfLocalPlayer << endl;
+    
+    csgo.m_oAddressOfForceJump = client.client_start + 0x62F21A0;
 
     csgo.m_bShouldGlow = true;
     csgo.m_bShouldNoFlash = true;
@@ -190,7 +192,7 @@ int main() {
                 {
                     break;
                 }
-
+                
 			XSelectInput(display, root, KeyPressMask);
 		}
         hack::Glow(&csgo, &client);

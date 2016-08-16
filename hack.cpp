@@ -40,9 +40,15 @@ void hack::Bhop(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, Dis
     
     if (onGround == 1 && csgo->m_bShouldBHop && csgo->m_bBhopEnabled)
     {
-        XTestFakeKeyEvent(display, keycodeJump, True, 0);
-        this_thread::sleep_for(chrono::milliseconds(1));
-        XTestFakeKeyEvent(display, keycodeJump, False, 0);
+        unsigned int jump = 5;
+        csgo->Write((void*) (csgo->m_oAddressOfForceJump), &jump, sizeof(int));
+        this_thread::sleep_for(chrono::milliseconds(2));
+        jump = 4;
+        csgo->Write((void*) (csgo->m_oAddressOfForceJump), &jump, sizeof(int));
+        
+        //XTestFakeKeyEvent(display, keycodeJump, True, 0);
+        //this_thread::sleep_for(chrono::milliseconds(1));
+        //XTestFakeKeyEvent(display, keycodeJump, False, 0);
     }
 }
 
