@@ -135,16 +135,10 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 		g_glow[i].m_bRenderWhenOccluded = 1;
                 g_glow[i].m_bRenderWhenUnoccluded = 0;
 
-                if (ent.m_iTeamNum == 2) {
-                    g_glow[i].m_flGlowRed = 1.0f;
+                if (ent.m_iTeamNum == 2 || ent.m_iTeamNum == 3) {
+                    g_glow[i].m_flGlowRed = (teamNumber != ent.m_iTeamNum ? 1.0f : 0.0f);
                     g_glow[i].m_flGlowGreen = 0.0f;
-                    g_glow[i].m_flGlowBlue = 0.0f;
-                    g_glow[i].m_flGlowAlpha = 0.6f;
-
-                } else if (ent.m_iTeamNum == 3) {
-                    g_glow[i].m_flGlowRed = 0.0f;
-                    g_glow[i].m_flGlowGreen = 0.0f;
-                    g_glow[i].m_flGlowBlue = 1.0f;
+                    g_glow[i].m_flGlowBlue = (teamNumber == ent.m_iTeamNum ? 1.0f : 0.0f);
                     g_glow[i].m_flGlowAlpha = 0.6f;
                 }
             }
