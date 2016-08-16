@@ -15,6 +15,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <inttypes.h>
 
 #define FL_ONGROUND (1<<0)
 
@@ -91,6 +92,7 @@ namespace remote {
     public:
         std::vector<MapModuleMemoryRegion> regions;
     };
-
+    
+    unsigned long getModule(const char * modname, pid_t pid);
     bool FindProcessByName(std::string name, Handle* out);
 };

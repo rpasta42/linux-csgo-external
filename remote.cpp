@@ -227,6 +227,26 @@ namespace remote {
     }
 };
 
+unsigned long remote::getModule(const char * moduleName, pid_t pid){
+    
+    char cmd[256];
+    FILE *maps;
+    unsigned long result = 0;
+    
+    
+    snprintf(cmd, 256, "grep \"%s\" /proc/%i/maps | head -n 1 | cut -d \"-\" -f1", moduleName, pid);
+    maps = popen(cmd, "r");
+    
+    if(maps)
+    {
+        if(fscanf(maps, "%" SCNx64, &result));
+    }
+    
+    pclose(maps);
+    
+    return result;
+}
+
 // Functions Exported
 bool remote::FindProcessByName(std::string name, remote::Handle* out) {
     if(out == NULL || name.empty())
