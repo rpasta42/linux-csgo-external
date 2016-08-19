@@ -137,7 +137,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                         csgo->Read((void*) (localPlayer+0xB370 + 0x10), //+ i
                                    &crossHairId, sizeof(int));
 
-                        csgo->Read((void*) ((unsigned long)(g_glow[i].m_pEntity)+0x8C + i), &entityId, sizeof(int));
+                        //csgo->Read((void*) ((unsigned long)(g_glow[i].m_pEntity)+0x8C + i), &entityId, sizeof(int));
 
                         cout << "i: " << i << "\tcross: " << crossHairId << "\tent: " << entityId << endl;
 
