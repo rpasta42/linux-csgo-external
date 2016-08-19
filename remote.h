@@ -55,13 +55,14 @@ namespace remote {
     unsigned long m_oAddressOfForceJump;
 	unsigned long m_addressOfAlt1;
     unsigned long m_addressOfOnGround;
-    
+
     unsigned long a_engine_client;
-    
+
 	bool m_bShouldGlow;
 	bool m_bShouldNoFlash;
     bool m_bShouldBHop;
     bool m_bBhopEnabled;
+   bool kkShootKeyDown;
 
         Handle() : pid(-1) {}
         Handle(pid_t target);
@@ -94,7 +95,7 @@ namespace remote {
     public:
         std::vector<MapModuleMemoryRegion> regions;
     };
-    
+
     unsigned long getModule(const char * modname, pid_t pid);
     bool FindProcessByName(std::string name, Handle* out);
 };

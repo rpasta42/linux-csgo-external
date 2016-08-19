@@ -1,6 +1,8 @@
 linux-csgo-external
 ===================
 
+deps: sudo apt-get install libxtst-dev
+
 Linux cheat for x64 linux systems
 
 Features:

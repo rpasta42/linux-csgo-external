@@ -55,10 +55,13 @@ namespace remote {
         buffer << target;
         pid = target;
         pidStr = buffer.str();
+
     }
 
     Handle::Handle(std::string target) {
         // Check to see if the string is numeric (no negatives or dec allowed, which makes this function usable)
+        kkShootKeyDown = false;
+
         if(strspn(target.c_str(), "0123456789") != target.size()) {
             pid = -1;
             pidStr.clear();
@@ -228,22 +231,22 @@ namespace remote {
 };
 
 unsigned long remote::getModule(const char * moduleName, pid_t pid){
-    
+
     char cmd[256];
     FILE *maps;
     unsigned long result = 0;
-    
-    
+
+
     snprintf(cmd, 256, "grep \"%s\" /proc/%i/maps | head -n 1 | cut -d \"-\" -f1", moduleName, pid);
     maps = popen(cmd, "r");
-    
+
     if(maps)
     {
         if(fscanf(maps, "%" SCNx64, &result));
     }
-    
+
     pclose(maps);
-    
+
     return result;
 }
 

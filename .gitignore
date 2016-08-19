@@ -1,3 +1,4 @@
+*.swp
 CMakeFiles/*
 .idea/*
 cmake_install.cmake
