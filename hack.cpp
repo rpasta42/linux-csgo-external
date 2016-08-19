@@ -85,20 +85,23 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 
     if(localPlayer != 0)
     {
-        csgo->Read((void*) (localPlayer+0x120), &teamNumber, sizeof(int));
+        csgo->Read((void*) (localPlayer+0x128), &teamNumber, sizeof(int));
         NoFlash(csgo, client, localPlayer);	
     }
+    
     
     for (unsigned int i = 0; i < count; i++)
     {
         if (g_glow[i].m_pEntity != NULL)
         {
-            hack::Entity ent;
+            unsigned int ent_team = 0;
+            csgo->Read((void*)g_glow[i].m_pEntity + 0x128, &ent_team, sizeof(int));
             
+            hack::Entity ent;
             
             if (csgo->Read(g_glow[i].m_pEntity, &ent, sizeof(hack::Entity)))
             {
-                if (ent.m_iTeamNum != 2 && ent.m_iTeamNum != 3 || ent.m_isDormant == 1)
+                if (ent_team != 2 && ent_team != 3 || ent.m_isDormant == 1)
                 {
                     g_glow[i].m_bRenderWhenOccluded = 0;
                     g_glow[i].m_bRenderWhenUnoccluded = 0;
@@ -110,7 +113,7 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
 
                 if(localPlayer != 0 && (iAlt1Status == 0x5) )
                 {
-                    if(ent.m_iTeamNum != teamNumber)
+                    if(ent_team != teamNumber)
                     {
                         unsigned int crossHairId = 0;
                         unsigned int entityId = 0;
@@ -138,10 +141,10 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                 g_glow[i].m_bRenderWhenOccluded = 1;
                 g_glow[i].m_bRenderWhenUnoccluded = 0;
 
-                if (ent.m_iTeamNum == 2 || ent.m_iTeamNum == 3) {
-                    g_glow[i].m_flGlowRed = (teamNumber != ent.m_iTeamNum ? 1.0f : 0.0f);
+                if (ent_team == 2 || ent_team == 3) {
+                    g_glow[i].m_flGlowRed = (teamNumber != ent_team ? 1.0f : 0.0f);
                     g_glow[i].m_flGlowGreen = 0.0f;
-                    g_glow[i].m_flGlowBlue = (teamNumber == ent.m_iTeamNum ? 1.0f : 0.0f);
+                    g_glow[i].m_flGlowBlue = (teamNumber == ent_team ? 1.0f : 0.0f);
                     g_glow[i].m_flGlowAlpha = 0.6f;
                 }
             }
