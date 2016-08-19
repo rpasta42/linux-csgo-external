@@ -26,7 +26,7 @@ Bind your own key to alt1:
 bind yourkey +alt1
 
 ### Compiling
-* Requires Xlib (both `libx11-dev:i386` and `libx11-dev`, `# apt-get install libx11-dev libx11-dev:i386` on Debian based systems
+* Requires Xlib (both `libx11-dev:i386`, `libx11-dev`, `libxtst-dev` , `# apt-get install libx11-dev libx11-dev:i386 libxtst-dev` on Debian based systems
 * `cd` into the repo directory and enter the command `make`
 
 ## Tested Distributions
