@@ -151,7 +151,7 @@ int main() {
     csgo.m_addressOfAlt1 = csgo.GetCallAddress((void*)(foundAlt1Mov+20));
     cout << "Address of local player " << csgo.m_addressOfLocalPlayer << endl;
     
-    csgo.m_oAddressOfForceJump = client.client_start + 0x62F21A0;
+    csgo.m_oAddressOfForceJump = client.client_start + 0x62F3500;
 
     csgo.m_bShouldGlow = true;
     csgo.m_bShouldNoFlash = true;

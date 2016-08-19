@@ -24,7 +24,7 @@ void hack::Bhop(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, Dis
 {
     if (!csgo || !client)
         return;
-        
+    
     int keycodeJump = XKeysymToKeycode(display, XK_K);
     
     unsigned long localPlayer = 0;
@@ -32,7 +32,7 @@ void hack::Bhop(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, Dis
     csgo->Read((void*) csgo->m_addressOfLocalPlayer, &localPlayer, sizeof(long));
     
     unsigned int onGround = 0;
-    csgo->Read((void*) (localPlayer+0x12c+0x4), &onGround, sizeof(int));
+    csgo->Read((void*) (localPlayer+0x134+0x4), &onGround, sizeof(int));
     
     //std::cout << "Onground: " << (onGround & (1 << 0)) << std::endl;
     
