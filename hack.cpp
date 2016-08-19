@@ -124,21 +124,24 @@ void hack::Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client) {
                         unsigned int release = 0x4;
                         //cout << localPlayer;
 
-                        for (int i = 0; i <= 20; i++) {
+                        for (int i = 0; i <= 5; i++) {
 
-                           csgo->Read((void*) (localPlayer+0xB370 + i),
+                           csgo->Read((void*) (localPlayer+0xB370 + 0x10), //+ i
                                       &crossHairId, sizeof(int));
 
                            csgo->Read((void*) ((unsigned long)(g_glow[i].m_pEntity)+0x8C + i), &entityId, sizeof(int));
-                           if(crossHairId == entityId)
-                           {   cout << "need to shoot" << endl;
-                               cout << i;
-                               usleep(100);
-                               csgo->Write((void*) (csgo->m_addressOfForceAttack), &attack, sizeof(int));
-                               usleep(100);
-                               csgo->Write((void*) (csgo->m_addressOfForceAttack), &release, sizeof(int));
-                           }
-                      }
+
+                           cout << "i: " << i << "\tcross: " << crossHairId << "\tent: " << entityId << endl;
+                        }
+                        if (crossHairId != 0) //(crossHairId == entityId)
+                        {   cout << "need to shoot" << endl;
+                            cout << i;
+                            usleep(100);
+                            csgo->Write((void*) (csgo->m_addressOfForceAttack), &attack, sizeof(int));
+                            usleep(100);
+                            csgo->Write((void*) (csgo->m_addressOfForceAttack), &release, sizeof(int));
+                        }
+
                   }
                 }
 
