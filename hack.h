@@ -13,6 +13,7 @@
 #include <stddef.h>
 
 #include "remote.h"
+#include "types.h"
 #include "log.h"
 
 using namespace std;
@@ -87,34 +88,7 @@ namespace hack {
         unsigned int unk5; //0028 (054612E8)
     };
 
-    struct Entity
-    {
-        unsigned char unk0[0x11D];  
-        unsigned char m_isDormant;  
-        unsigned char unk01[0x6];   
-        int           m_iTeamNum;   
-        int           unk1;         
-        int           unk2;         
-        int           m_iHealth;    
-        unsigned char unk3[0x15B];  
-        int           m_lifeState;  
-    };
-
-    struct Color {
-        unsigned char _color[4];
-    };
-
-    struct Vector {
-        float x, y, z;
-    };
-
-    struct QAngle {
-        float x, y, z;
-    };
-
-    struct Vector2D {
-        float x, y;
-    };
+    
     
     extern void Glow(remote::Handle* csgo, remote::MapModuleMemoryRegion* client);
     extern void Bhop(remote::Handle* csgo, remote::MapModuleMemoryRegion* client, Display* display);
